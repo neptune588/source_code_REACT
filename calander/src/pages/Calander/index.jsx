@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import uuid from "react-uuid";
 
-import { daysOfWeek } from "@/pages/Calander/mockData";
+import CalanderDay from "@/components/Day";
 
 import {
   Container,
@@ -10,9 +10,11 @@ import {
   CurDateBox,
   DaysOfWeekBox,
   DaysBox,
-  Days,
   SelectedDateBox,
 } from "@/pages/Calander/style";
+
+import { daysOfWeek, getCurrentDate } from "@/pages/Calander/mockData";
+
 //전체 캘린더 칸수: 42칸
 
 //저번달:
@@ -42,27 +44,25 @@ import {
 export default function Calander() {
   const calanderMaxCell = 7 * 6;
 
-  const [renderDate, setRenderDate] = useState({
-    year: null,
-    month: null,
+  const [renderDays, setRenderDays] = useState({
     prevDays: [],
     curDays: [],
     nextDays: [],
   });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const { currentYear, currentMonth, currentDay } = getCurrentDate();
+
+    return {
+      selectedYear: currentYear,
+      selectedMonth: currentMonth,
+      selectedDay: currentDay,
+    };
+  });
   const [weekDays] = useState(daysOfWeek);
 
   //첫 렌더링 될때 필요한 로직
-  const getCurrentDate = () => {
-    const currentDate = new Date();
 
-    return {
-      currentYear: currentDate.getFullYear(),
-      currentMonth: currentDate.getMonth(),
-      currentDay: currentDate.getDate(),
-    };
-  };
-
-  const calcDate = ({ year, month }) => {
+  const calcDays = ({ year, month }) => {
     const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
     const curMonthStartWeekDay = new Date(year, month, 1).getDay();
     const curMonthTotalDay = new Date(year, month + 1, 0).getDate();
@@ -93,19 +93,54 @@ export default function Calander() {
       }
     );
 
-    setRenderDate({
-      year,
-      month,
+    setRenderDays({
       prevDays: prevMonthLastRenderDays,
       curDays: curMonthTotalRenderDays,
       nextDays: nextMonthTotalRenderDays,
     });
   };
 
+  const handlePrevMonthDaysClick = (selectDay) => {
+    const curYear = selectedDate.selectedYear;
+    const curMonth = selectedDate.selectedMonth;
+
+    const year = curMonth === 0 ? curYear - 1 : curYear;
+    const month = curMonth === 0 ? 11 : curMonth - 1;
+
+    setSelectedDate({
+      selectedYear: year,
+      selectedMonth: month,
+      selectedDay: selectDay,
+    });
+    calcDays({ year, month });
+  };
+
+  const handleCurrentMonthDaysClick = (selectDay) => {
+    setSelectedDate((prev) => {
+      return {
+        ...prev,
+        selectedDay: selectDay,
+      };
+    });
+  };
+  const handleNextMonthDaysClick = (selectDay) => {
+    const curYear = selectedDate.selectedYear;
+    const curMonth = selectedDate.selectedMonth;
+
+    const year = curMonth === 11 ? curYear + 1 : curYear;
+    const month = curMonth === 11 ? 0 : curMonth + 1;
+
+    setSelectedDate({
+      selectedYear: year,
+      selectedMonth: month,
+      selectedDay: selectDay,
+    });
+    calcDays({ year, month });
+  };
+
   useEffect(() => {
     const { currentYear, currentMonth } = getCurrentDate();
-
-    calcDate({ year: currentYear, month: currentMonth });
+    calcDays({ year: currentYear, month: currentMonth });
   }, []);
 
   return (
@@ -113,8 +148,9 @@ export default function Calander() {
       <Wrapper>
         <CalanderBox>
           <CurDateBox>
-            <p>{`${renderDate.year}.`}</p>
-            <p>{`${renderDate.month}`}</p>
+            <p>{`${selectedDate.selectedYear}.`}</p>
+            <p>{`${selectedDate.selectedMonth + 1}.`}</p>
+            <p>{`${selectedDate.selectedDay}`}</p>
           </CurDateBox>
           <DaysOfWeekBox>
             {weekDays.map((day) => {
@@ -122,25 +158,39 @@ export default function Calander() {
             })}
           </DaysOfWeekBox>
           <DaysBox>
-            {renderDate.prevDays.map((day) => {
+            {renderDays.prevDays.map((day) => {
               return (
-                <Days key={uuid()}>
-                  <button type="button">{day}</button>
-                </Days>
+                <CalanderDay
+                  key={uuid()}
+                  day={day}
+                  dayClick={() => {
+                    handlePrevMonthDaysClick(day);
+                  }}
+                />
               );
             })}
-            {renderDate.curDays.map((day) => {
+            {renderDays.curDays.map((day) => {
               return (
-                <Days key={uuid()} $dayType={"curMonthDay"}>
-                  <button type="button">{day}</button>
-                </Days>
+                <CalanderDay
+                  key={uuid()}
+                  dayType={"curMonthDay"}
+                  day={day}
+                  selectedDay={selectedDate.selectedDay}
+                  dayClick={() => {
+                    handleCurrentMonthDaysClick(day);
+                  }}
+                />
               );
             })}
-            {renderDate.nextDays.map((day) => {
+            {renderDays.nextDays.map((day) => {
               return (
-                <Days key={uuid()}>
-                  <button type="button">{day}</button>
-                </Days>
+                <CalanderDay
+                  key={uuid()}
+                  day={day}
+                  dayClick={() => {
+                    handleNextMonthDaysClick(day);
+                  }}
+                />
               );
             })}
           </DaysBox>

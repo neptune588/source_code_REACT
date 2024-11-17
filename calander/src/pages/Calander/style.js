@@ -53,25 +53,6 @@ const DaysBox = styled.ul`
   grid-template-rows: repeat(6, 1fr);
 `;
 
-const Days = styled.li`
-  border: 1px solid gray;
-  border-top: none;
-  border-left: none;
-  padding: 15px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  width: 100%;
-  cursor: pointer;
-  color: ${({ $dayType }) =>
-    $dayType === "curMonthDay" ? "black" : "#606060"};
-  background-color: ${({ $selected }) =>
-    $selected ? "skyblue" : "transparent"};
-  &:nth-child(7n + 1) {
-    border-left: 1px solid gray;
-  }
-`;
 const SelectedDateBox = styled.div`
   width: 49%;
 `;
@@ -83,6 +64,5 @@ export {
   CurDateBox,
   DaysOfWeekBox,
   DaysBox,
-  Days,
   SelectedDateBox,
 };
