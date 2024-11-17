@@ -22,12 +22,22 @@ const CalanderBox = styled.div`
 
 const CurDateBox = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+  user-select: none;
   margin-bottom: 10px;
-  > p {
+  > div {
+    &:nth-child(2) {
+      display: flex;
+      font-size: 1.8rem;
+    }
+  }
+`;
+
+const ArrowBox = styled.div`
+  > svg {
     font-size: 1.8rem;
-    margin-right: 10px;
+    cursor: pointer;
   }
 `;
 
@@ -62,6 +72,7 @@ export {
   Wrapper,
   CalanderBox,
   CurDateBox,
+  ArrowBox,
   DaysOfWeekBox,
   DaysBox,
   SelectedDateBox,

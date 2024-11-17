@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import uuid from "react-uuid";
 
 import CalanderDay from "@/components/Day";
@@ -8,6 +13,7 @@ import {
   Wrapper,
   CalanderBox,
   CurDateBox,
+  ArrowBox,
   DaysOfWeekBox,
   DaysBox,
   SelectedDateBox,
@@ -63,16 +69,20 @@ export default function Calander() {
   //첫 렌더링 될때 필요한 로직
 
   const calcDays = ({ year, month }) => {
-    const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
     const curMonthStartWeekDay = new Date(year, month, 1).getDay();
     const curMonthTotalDay = new Date(year, month + 1, 0).getDate();
 
     const prevMonthLastRenderDays = Array.from(
       { length: curMonthStartWeekDay },
       (_, index) => {
-        const remainIndex =
-          curMonthStartWeekDay === 0 ? 0 : curMonthStartWeekDay - 1;
-        const day = prevMonthLastDay - remainIndex + index;
+        //curMonthStartWeekDay 3,
+        //prevMonthLastDay 31
+        //repeat 횟수 3, index 2
+        //31 - index 31 30 29
+        //sort로 오름차순으로 해도되고 처음부터 정렬해서 넣기
+
+        const day = prevMonthLastDay - (curMonthStartWeekDay - 1) + index;
         return day;
       }
     );
@@ -100,7 +110,7 @@ export default function Calander() {
     });
   };
 
-  const handlePrevMonthDaysClick = (selectDay) => {
+  const handlePrevMonthClick = (selectDay) => {
     const curYear = selectedDate.selectedYear;
     const curMonth = selectedDate.selectedMonth;
 
@@ -123,7 +133,7 @@ export default function Calander() {
       };
     });
   };
-  const handleNextMonthDaysClick = (selectDay) => {
+  const handleNextMonthClick = (selectDay) => {
     const curYear = selectedDate.selectedYear;
     const curMonth = selectedDate.selectedMonth;
 
@@ -148,9 +158,27 @@ export default function Calander() {
       <Wrapper>
         <CalanderBox>
           <CurDateBox>
-            <p>{`${selectedDate.selectedYear}.`}</p>
-            <p>{`${selectedDate.selectedMonth + 1}.`}</p>
-            <p>{`${selectedDate.selectedDay}`}</p>
+            <ArrowBox>
+              <FontAwesomeIcon
+                icon={faChevronLeft}
+                onClick={() => {
+                  handlePrevMonthClick(selectedDate.selectedDay);
+                }}
+              />
+            </ArrowBox>
+            <div>
+              <p>{`${selectedDate.selectedYear}.`}</p>
+              <p>{`${selectedDate.selectedMonth + 1}.`}</p>
+              <p>{`${selectedDate.selectedDay}`}</p>
+            </div>
+            <ArrowBox>
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                onClick={() => {
+                  handleNextMonthClick(selectedDate.selectedDay);
+                }}
+              />
+            </ArrowBox>
           </CurDateBox>
           <DaysOfWeekBox>
             {weekDays.map((day) => {
@@ -164,7 +192,7 @@ export default function Calander() {
                   key={uuid()}
                   day={day}
                   dayClick={() => {
-                    handlePrevMonthDaysClick(day);
+                    handlePrevMonthClick(day);
                   }}
                 />
               );
@@ -188,7 +216,7 @@ export default function Calander() {
                   key={uuid()}
                   day={day}
                   dayClick={() => {
-                    handleNextMonthDaysClick(day);
+                    handleNextMonthClick(day);
                   }}
                 />
               );
