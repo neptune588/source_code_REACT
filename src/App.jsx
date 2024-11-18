@@ -1,7 +1,13 @@
-import Calander from "./pages/Calander";
+import Calander from "@/pages/Calander";
+import TimeCountdown from "@/pages/TimeCountdown";
 
 function App() {
-  return <Calander />;
+  return (
+    <>
+      <TimeCountdown />
+      <Calander />
+    </>
+  );
 }
 
 export default App;
