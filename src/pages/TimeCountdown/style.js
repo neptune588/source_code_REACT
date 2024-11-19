@@ -27,6 +27,7 @@ const Time = styled.p`
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   width: 120px;
   height: 120px;
   background-color: #434343;
