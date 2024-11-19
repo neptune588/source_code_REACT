@@ -5,4 +5,4 @@
 실무에서 사용할 source code를 제작.
 
 1. calander 완
-2. time countdown 진행 중
+2. time countdown 완
